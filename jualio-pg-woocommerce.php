@@ -132,6 +132,7 @@ function woocommerce_jualio2_pg_init(){
         'customer_key' => $this->customer_key,
         'callback_url' => $this->get_return_url($order),
         'notify_url' => $this->notifyurl,
+        'invoice_no' => $order->get_order_number(),
         'carts' => array(),
         'buyer_data' => array(
           'name' => $address['first_name'] . ' ' . $address['last_name'],
@@ -214,15 +215,15 @@ function woocommerce_jualio2_pg_init(){
 
       $response_body = json_decode($response['body']);
 
-      // // DEBUG : cek url
-      // echo 'url '.$this->liveurl;
-      // // DEBUG : cek client id
-      // echo 'client id '.$this->client_id;
-      // // DEBUG : cek request
-      // echo 'request '.json_encode($jualio_request);
-      // // DEBUG : cek response
-      // echo 'response '.json_encode($response['body']);
-      // wp_die('die');
+      // DEBUG : cek url
+      echo 'url '.$this->liveurl;
+      // DEBUG : cek client id
+      echo 'client id '.$this->client_id;
+      // DEBUG : cek request
+      echo 'request '.json_encode($jualio_request);
+      // DEBUG : cek response
+      echo 'response '.json_encode($response['body']);
+      wp_die('die');
 
       return $response_body->data->payment_url;
 
@@ -291,7 +292,7 @@ function woocommerce_jualio2_pg_init(){
   add_action('wp_ajax_nopriv_jualio_notification', 'process_jualio_notification');
 
   function process_jualio_notification(){
-    add_option( 'test-notify-jualio', $_POST );
+    update_option( 'test-notify-jualio', json_encode($_POST) );
   }
 
 
