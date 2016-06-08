@@ -1,11 +1,25 @@
-<h1>1. Tutorial Penggunaan Jualio Payment</h1>
+<p>This plugin allows you to accept payment on your WooComerce store from Jualio Payment Gateway</p>
 
-<p> - Pastikan anda sudah mendapatkan Jualio Password dari Admin Jualio.com</p> 
-<p> - Kemudian masuk ke halaman setting WooCommerce dan tab <b>checkout</b>, </p>
-<p> - Kemudian pada <b>Gateway Display Order</b> klik button settings jualio. Sehingga muncul gambar seperti di bawah ini</p>
+<h3>Installation</h3>
 
-<img src="<?php echo plugins_url( '../assets/tutorial1.png', __FILE__ ); ?>" height="500" width="500">
+<ol>
+  <li>Download your copy of Jualio WP to your desktop.</li>
+  <li>Extract the Plugin folder to your desktop.</li>
+  <li>Read through the "readme" file thoroughly to ensure you follow the installation instructions.</li>
+  <li>With your FTP program, upload the Jualio WP folder to the wp-content/plugins folder in your WordPress directory online.</li>
+  <li>Go to Plugins screen and find the newly uploaded Jualio WP Plugin in the list.</li>
+  <li>Click Activate to activate it.</li>
+</ol>
 
-<p> - Centang Enable jualio kemudian isi Merchant ID, Master Merchant ID, dan Password Jualio sesuai dengan yang anda dapat dari Admin Jualio.com.</p>
-<p> - Centang Live Jualio apabila ingin beralih dari mode sandbox ke live (Default : Sandbox) </p>
-<p> - Kemudian klik Save changes, Dan Jualio Payment sudah bisa digunakan pada checkout order anda. Enjoy ^_^</p>
+<h3>Usage</h3>
+
+<ol>
+  <li>Go to the WooCommerce > Settings Menu</li>
+  <li>Select the Checkout Tab</li>
+  <li>Click the jualiov2 link</li>
+  <li>Check the Enable Jualio Payment Module</li>
+  <li>Optionally change the Title and Description</li>
+  <li>Fill in the Client ID and Customer Key (refer to your Jualio Account for this)</li>
+  <li>Select the default payment channel to be used</li>
+  <li>Check the Live Jualio Payment if you are sure everything is all set</li>
+</ol>
