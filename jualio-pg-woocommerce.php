@@ -45,7 +45,7 @@ function woocommerce_jualio2_pg_init(){
       $this -> msg['message'] = "";
       $this -> msg['class'] = "";
 
-      $this -> notifyurl = admin_url('admin-ajax.php').'?action=jualio_notification';
+      $this -> notify_url = admin_url('admin-ajax.php').'?action=jualio_notification';
 
       if ($this->status == 'no'){
         $this -> liveurl = $this -> devurl;
@@ -111,6 +111,7 @@ function woocommerce_jualio2_pg_init(){
     public function admin_options(){
       echo '<h3>'.__('Jualio Payment Gateway', 'jualiov2').'</h3>';
       echo '<p>'.__('Jualio is most popular payment gateway for online shopping in Indonesia (Only can use currency IDR)').'</p>';
+
       echo '<table class="form-table">';
       // Generate the HTML For the settings form.
       $this -> generate_settings_html();
@@ -131,8 +132,8 @@ function woocommerce_jualio2_pg_init(){
         'object' => 'payment',
         'customer_key' => $this->customer_key,
         'callback_url' => $this->get_return_url($order),
-        'notify_url' => $this->notifyurl,
-        'invoice_no' => $order->get_order_number(),
+        'notify_url' => $this->notify_url,
+        'invoice_no' => $order->get_order_number().'',
         'carts' => array(),
         'buyer_data' => array(
           'name' => $address['first_name'] . ' ' . $address['last_name'],
@@ -215,15 +216,15 @@ function woocommerce_jualio2_pg_init(){
 
       $response_body = json_decode($response['body']);
 
-      // // DEBUG : cek url
-      // echo 'url '.$this->liveurl;
-      // // DEBUG : cek client id
-      // echo 'client id '.$this->client_id;
-      // // DEBUG : cek request
-      // echo 'request '.json_encode($jualio_request);
-      // // DEBUG : cek response
-      // echo 'response '.json_encode($response['body']);
-      // wp_die('die');
+       // DEBUG : cek url
+       //  echo 'url '.$this->liveurl;
+       // DEBUG : cek client id
+       // echo 'client id '.$this->client_id;
+       // DEBUG : cek request
+       // echo 'request '.json_encode($jualio_request);
+       // DEBUG : cek response
+       // echo 'response '.json_encode($response['body']);
+       // wp_die('die');
 
       return $response_body->data->payment_url;
 
@@ -275,9 +276,6 @@ function woocommerce_jualio2_pg_init(){
       $order = new WC_Order( $order_id );
 
       if (isset($_GET['status']) && $_GET['status'] == 'SUCCESS' && strpos($_SERVER['HTTP_REFERER'], 'jualio.com')) {
-      // DEV TESTING 
-      // if (isset($_GET['status']) && $_GET['status'] == 'SUCCESS' ) {
-        // echo 'success bro';
         // Payment complete
         $order->payment_complete();
         // Add Jualio Invoice
@@ -292,7 +290,12 @@ function woocommerce_jualio2_pg_init(){
   add_action('wp_ajax_nopriv_jualio_notification', 'process_jualio_notification');
 
   function process_jualio_notification(){
-    update_option( 'test-notify-jualio', json_encode($_POST) );
+    $notification = json_decode(file_get_contents("php://input"));
+    if ($notification->transaction->status == 'SUCCESS') {
+      $order = new WC_Order( $notification->transaction->invoice_no );
+      $order->payment_complete();
+      $order->add_order_note( __('Jualio Invoice No: ' . $_GET['invoice_no'], 'jualiov2') );
+    }
   }
 
 
