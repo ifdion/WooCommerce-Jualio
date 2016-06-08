@@ -23,7 +23,8 @@ function woocommerce_jualio2_pg_init(){
 
     public function __construct(){
       $this -> id = 'jualiov2';
-      $this -> medthod_title = 'jualiov2';
+      $this -> method_title = 'jualiov2';
+      $this -> icon = plugins_url( 'assets/visa-master-bersama-prima_01.png', __FILE__ );
       $this -> has_fields = false;
 
       $this -> init_form_fields();
@@ -141,18 +142,62 @@ function woocommerce_jualio2_pg_init(){
         )
       );
 
-       foreach ($items as $key => $value) {
+      foreach ($items as $key => $value) {
         $product = $order->get_product_from_item($value);
 
         $jualio_product = array();
         $jualio_product['name'] = $value['name'];
         $jualio_product['amount'] = intval($value['line_total']);
         $jualio_product['category'] = 'plain';
-        $jualio_product['description'] = $product->post->post_excerpt;
-        $jualio_product['image'] = wp_get_attachment_url($product->get_image_id() );
-
+        if ($product->post->post_excerpt) {
+          $jualio_product['description'] = $product->post->post_excerpt;
+        } else {
+          $jualio_product['description'] = $value['name'];
+        }
+        if (wp_get_attachment_url($product->get_image_id() )) {
+          $jualio_product['image'] = wp_get_attachment_url($product->get_image_id() );
+        } else {
+          $jualio_product['image'] = 'https://i.jual.io/no-image.png';
+        }
+        
         $jualio_request['carts'][] = $jualio_product;
       }
+
+
+      // add shipping cost
+      $shipping_cost = 0;
+      if ($order->get_total_shipping()) {
+        $shipping_cost = $order->get_total_shipping();
+      }
+      if ($shipping_cost != 0) {
+        $jualio_shipping = array(
+          'name'=> 'Shipping Cost',
+          'amount'=> $order->get_total_shipping(),
+          'category'=> 'plain',
+          'description'=> 'Shipping Cost',
+          'image'=> 'https://i.jual.io/no-image.png'
+        );
+        $jualio_request['carts'][] = $jualio_shipping;
+      }
+
+      // add aditional fees
+      $order_fees = $order->get_fees();
+
+      foreach ($order_fees as $key => $value) {
+        $fee_item = array(
+          'name'=> $value['name'],
+          'amount'=> intval($value['line_total']),
+          'category'=> 'plain',
+          'description'=> $value['name'],
+          'image'=> 'https://i.jual.io/no-image.png'
+        );
+        $jualio_request['carts'][] = $fee_item;
+      }
+
+      // echo '<pre>';
+      // print_r($jualio_request);
+      // echo '</pre>';
+      // wp_die('die' );
 
       $response = wp_remote_post( $this->liveurl, array(
         'method' => 'POST',
@@ -164,11 +209,17 @@ function woocommerce_jualio2_pg_init(){
         )
       );
 
-      // DEBUG : cek request
-      // echo json_encode($jualio_request);
-      // wp_die('die' );
-
       $response_body = json_decode($response['body']);
+
+      // // DEBUG : cek url
+      // echo 'url '.$this->liveurl;
+      // // DEBUG : cek client id
+      // echo 'client id '.$this->client_id;
+      // // DEBUG : cek request
+      // echo 'request '.json_encode($jualio_request);
+      // // DEBUG : cek response
+      // echo 'response '.json_encode($response['body']);
+      // wp_die('die');
 
       return $response_body->data->payment_url;
 
