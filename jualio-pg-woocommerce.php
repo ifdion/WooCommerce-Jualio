@@ -215,15 +215,15 @@ function woocommerce_jualio2_pg_init(){
 
       $response_body = json_decode($response['body']);
 
-      // DEBUG : cek url
-      echo 'url '.$this->liveurl;
-      // DEBUG : cek client id
-      echo 'client id '.$this->client_id;
-      // DEBUG : cek request
-      echo 'request '.json_encode($jualio_request);
-      // DEBUG : cek response
-      echo 'response '.json_encode($response['body']);
-      wp_die('die');
+      // // DEBUG : cek url
+      // echo 'url '.$this->liveurl;
+      // // DEBUG : cek client id
+      // echo 'client id '.$this->client_id;
+      // // DEBUG : cek request
+      // echo 'request '.json_encode($jualio_request);
+      // // DEBUG : cek response
+      // echo 'response '.json_encode($response['body']);
+      // wp_die('die');
 
       return $response_body->data->payment_url;
 
