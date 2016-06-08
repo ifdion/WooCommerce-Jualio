@@ -45,6 +45,8 @@ function woocommerce_jualio2_pg_init(){
       $this -> msg['message'] = "";
       $this -> msg['class'] = "";
 
+      $this -> notifyurl = admin_url('admin-ajax.php').'?action=jualio_notification';
+
       if ($this->status == 'no'){
         $this -> liveurl = $this -> devurl;
       }
@@ -129,6 +131,7 @@ function woocommerce_jualio2_pg_init(){
         'object' => 'payment',
         'customer_key' => $this->customer_key,
         'callback_url' => $this->get_return_url($order),
+        'notify_url' => $this->notifyurl,
         'carts' => array(),
         'buyer_data' => array(
           'name' => $address['first_name'] . ' ' . $address['last_name'],
@@ -280,6 +283,18 @@ function woocommerce_jualio2_pg_init(){
         $order->add_order_note( __('Jualio Invoice No: ' . $_GET['invoice_no'], 'jualiov2') );
       }
   };
+
+  /**
+   * Add an ajax get handler to catch notification from jualio
+   *
+   **/
+  add_action('wp_ajax_nopriv_jualio_notification', 'process_jualio_notification');
+
+  function process_jualio_notification(){
+    add_option( 'test-notify-jualio', $_POST );
+  }
+
+
 } // end func init
 
 ?>
